@@ -49,7 +49,7 @@ export default function Home() {
           >
             <img 
               src="/attached_assets/airbear-mascot-original_1757978673592.png" 
-              alt="AirBear mascot - friendly brown bear with pilot goggles" 
+              alt="AirBear - Your eco-friendly ride companion" 
               className="mx-auto rounded-full w-32 h-32 object-cover border-4 border-primary/30 hover-lift animate-pulse-glow"
               data-testid="img-mascot"
             />
