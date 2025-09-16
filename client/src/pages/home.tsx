@@ -48,7 +48,7 @@ export default function Home() {
             transition={{ duration: 0.8, type: "spring" }}
           >
             <img 
-              src="/attached_assets/airbear-mascot-original_1757978673592.png" 
+              src="/airbear-mascot-original.png" 
               alt="Friendly brown bear mascot with pilot goggles representing AirBear" 
               className="mx-auto rounded-full w-32 h-32 object-cover border-4 border-primary/30 hover-lift animate-pulse-glow"
               data-testid="img-mascot"
