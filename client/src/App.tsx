@@ -13,6 +13,7 @@ import Dashboard from "@/pages/dashboard";
 import Map from "@/pages/map";
 import Bodega from "@/pages/bodega";
 import Checkout from "@/pages/checkout";
+import Promo from "@/pages/promo";
 import NotFound from "@/pages/not-found";
 
 // Components
@@ -34,6 +35,7 @@ function Router() {
           <Route path="/map" component={Map} />
           <Route path="/bodega" component={Bodega} />
           <Route path="/checkout" component={Checkout} />
+          <Route path="/promo" component={Promo} />
           <Route component={NotFound} />
         </Switch>
       </main>

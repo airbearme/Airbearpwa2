@@ -57,11 +57,11 @@ export default function Header() {
                 alt="AirBear mascot" 
                 className="w-10 h-10 rounded-full object-cover animate-neon-glow" 
               />
-              <div className="flex flex-col">
+              <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-lime-500 to-amber-500 bg-clip-text text-transparent">
                   AirBear
                 </h1>
-                <p className="text-xs text-muted-foreground">Solar Ride Share</p>
+                <p className="text-xs text-emerald-600 font-semibold animate-shimmer">Eco rides so rare!</p>
               </div>
             </motion.div>
           </Link>
@@ -239,7 +239,7 @@ export default function Header() {
                           <p className="text-sm text-muted-foreground">{user.email}</p>
                         </div>
                       </div>
-                      
+
                       <Link to="/dashboard">
                         <Button 
                           variant="ghost" 
@@ -251,7 +251,7 @@ export default function Header() {
                           Dashboard
                         </Button>
                       </Link>
-                      
+
                       <Button 
                         variant="ghost" 
                         className="w-full justify-start text-destructive hover:text-destructive"

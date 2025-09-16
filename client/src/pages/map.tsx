@@ -146,26 +146,30 @@ export default function Map() {
       const availableRickshaws = rickshaws.filter(r => r.currentSpotId === spot.id);
       const hasRickshaws = availableRickshaws.length > 0;
       
-      // Create custom icon based on availability
+      // Create custom AirBear icon based on availability
       const iconHtml = `
-        <div class="relative group cursor-pointer">
-          <div class="w-10 h-10 border-3 border-${hasRickshaws ? 'lime-500' : 'gray-400'} rounded-full 
-                      ${hasRickshaws ? 'animate-pulse-glow' : ''} bg-white shadow-lg
-                      flex items-center justify-center">
-            <div class="w-6 h-6 border-2 border-${hasRickshaws ? 'lime-500' : 'gray-400'} rounded-full relative
-                        ${hasRickshaws ? 'animate-spin' : ''}">
-              <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                          w-3 h-0.5 bg-${hasRickshaws ? 'lime-500' : 'gray-400'}"></div>
-              <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-90
-                          w-3 h-0.5 bg-${hasRickshaws ? 'lime-500' : 'gray-400'}"></div>
+        <div class="relative group cursor-pointer airbear-marker">
+          <div class="w-12 h-12 border-3 border-${hasRickshaws ? 'emerald-500' : 'gray-400'} rounded-full 
+                      ${hasRickshaws ? 'animate-pulse-glow shadow-lg shadow-emerald-500/50' : ''} bg-gradient-to-br from-white to-emerald-50 
+                      flex items-center justify-center hover:scale-110 transition-all duration-300">
+            <div class="text-lg ${hasRickshaws ? 'animate-spin-slow' : ''} group-hover:animate-bounce">
+              🐻
             </div>
+            ${hasRickshaws ? `
+              <div class="absolute inset-0 rounded-full border-2 border-emerald-400 animate-ping opacity-30"></div>
+              <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-emerald-400 via-lime-400 to-yellow-400 opacity-20 blur-sm animate-pulse"></div>
+            ` : ''}
           </div>
           ${availableRickshaws.length > 0 ? `
-            <div class="absolute -top-2 -right-2 w-6 h-6 bg-green-500 text-white rounded-full 
-                        flex items-center justify-center text-xs font-bold">
+            <div class="absolute -top-2 -right-2 w-7 h-7 bg-gradient-to-r from-emerald-500 to-lime-500 text-white rounded-full 
+                        flex items-center justify-center text-xs font-bold shadow-lg animate-bounce">
               ${availableRickshaws.length}
             </div>
           ` : ''}
+          <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs font-semibold text-emerald-700 
+                      bg-white/90 px-2 py-1 rounded-full shadow-sm whitespace-nowrap">
+            ${spot.name}
+          </div>
         </div>
       `;
 
@@ -183,21 +187,36 @@ export default function Map() {
 
       // Add popup
       const popupContent = `
-        <div class="p-3 min-w-[200px]">
-          <h3 class="font-semibold text-lg mb-2">${spot.name}</h3>
-          <div class="space-y-2">
-            <div class="flex items-center text-sm">
-              <span class="w-3 h-3 rounded-full ${hasRickshaws ? 'bg-green-500' : 'bg-gray-400'} mr-2"></span>
-              ${hasRickshaws ? `${availableRickshaws.length} available` : 'No rickshaws'}
+        <div class="p-4 min-w-[250px] bg-white rounded-lg">
+          <div class="flex items-center mb-3">
+            <span class="text-2xl mr-2">🐻</span>
+            <h3 class="font-bold text-lg text-emerald-700">${spot.name}</h3>
+          </div>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between text-sm">
+              <span class="flex items-center">
+                <span class="w-3 h-3 rounded-full ${hasRickshaws ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'} mr-2"></span>
+                AirBears Available
+              </span>
+              <span class="font-semibold ${hasRickshaws ? 'text-emerald-600' : 'text-gray-500'}">
+                ${hasRickshaws ? `${availableRickshaws.length} ready` : 'None'}
+              </span>
             </div>
             ${hasRickshaws ? `
+              <div class="text-xs text-emerald-600 italic mb-2">
+                "Glide with AirBear, eco-rides so rare!"
+              </div>
               <button onclick="window.selectSpotForRide('${spot.id}')" 
-                      class="w-full mt-2 px-3 py-2 bg-gradient-to-r from-emerald-500 to-lime-500 
-                             text-white rounded-lg hover:from-emerald-600 hover:to-lime-600 
-                             transition-all font-medium">
-                Book Ride from Here
+                      class="w-full mt-2 px-4 py-3 bg-gradient-to-r from-emerald-500 via-lime-500 to-emerald-500 
+                             text-white rounded-lg hover:shadow-lg hover:scale-105
+                             transition-all font-bold text-sm shadow-md">
+                🚀 Book AirBear Ride
               </button>
-            ` : ''}
+            ` : `
+              <div class="text-xs text-gray-500 italic">
+                No AirBears available at this spot
+              </div>
+            `}
           </div>
         </div>
       `;

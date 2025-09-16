@@ -42,7 +42,9 @@ export default function Footer() {
             </div>
             
             <p className="text-emerald-200 mb-6 max-w-md">
-              Transforming transportation in Binghamton with eco-friendly rickshaws, 
+              <span className="font-bold text-lime-300">"AirBear flair, ride without a care—solar power in the air!"</span>
+              <br />
+              Transforming transportation in Binghamton with eco-friendly AirBears, 
               mobile bodegas, and community-driven sustainability.
             </p>
             
@@ -183,14 +185,15 @@ export default function Footer() {
             </p>
             
             <div className="flex items-center space-x-6 text-emerald-200">
-              <span className="font-semibold">Zero emissions, infinite possibilities.</span>
+              <span className="font-semibold">"Glide with AirBear, eco-rides so rare!"</span>
               <div className="flex items-center space-x-2">
                 <span className="text-xs">Powered by</span>
                 <img 
                   src="/airbear-mascot.png" 
                   alt="AirBear mascot" 
-                  className="w-6 h-6 rounded-full object-cover border border-emerald-200" 
+                  className="w-6 h-6 rounded-full object-cover border border-emerald-200 animate-spin-slow hover:animate-bounce" 
                 />
+                <span className="text-xs font-semibold">Solar Energy</span>
               </div>
             </div>
           </div>

@@ -6,9 +6,27 @@ hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 channel = "stable-24_05"
 
 [deployment]
-deploymentTarget = "autoscale"
 build = ["npm", "run", "build"]
-run = ["npm", "run", "start"]
+run = ["npx", "serve", "dist", "-p", "3000"]
+
+[[deployment.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[[deployment.responseHeaders]]
+path = "/sw.js"
+name = "Service-Worker-Allowed"
+value = "/"
+
+[[deployment.responseHeaders]]
+path = "/manifest.json"
+name = "Content-Type"
+value = "application/manifest+json"
+
+[[deployment.responseHeaders]]
+path = "/*"
+name = "X-Content-Type-Options"
+value = "nosniff"
 
 [env]
 PORT = "5000"

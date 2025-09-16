@@ -61,11 +61,11 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <span className="bg-gradient-to-r from-emerald-600 via-lime-500 to-amber-500 bg-clip-text text-transparent">
-              Solar-Powered
+            <span className="bg-gradient-to-r from-emerald-600 via-lime-500 to-amber-500 bg-clip-text text-transparent animate-pulse-glow">
+              AirBear Flair
             </span>
             <br />
-            <span className="text-foreground">Rickshaw Rides</span>
+            <span className="text-foreground">Ride Without a Care</span>
           </motion.h1>
           
           <motion.p 
@@ -74,9 +74,11 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            Experience eco-friendly transportation in Binghamton with onboard bodegas, 
-            <span className="text-primary font-semibold"> zero emissions</span>, and 
-            <span className="text-amber-500 font-semibold"> endless possibilities</span>
+            <span className="text-primary font-bold">Glide with AirBear, eco-rides so rare!</span> 
+            <br />
+            Solar power in the air with onboard bodegas, 
+            <span className="text-emerald-500 font-semibold"> zero emissions</span>, and 
+            <span className="text-amber-500 font-semibold"> AirBear's eco-key!</span>
           </motion.p>
 
           {/* CTA Buttons */}
@@ -89,11 +91,11 @@ export default function Home() {
             <Link to="/map">
               <Button 
                 size="lg" 
-                className="group relative eco-gradient text-white hover-lift ripple-effect px-8 py-4 text-lg font-semibold"
-                data-testid="button-book-ride"
+                className="group relative eco-gradient text-white hover-lift ripple-effect px-8 py-4 text-lg font-semibold animate-neon-glow"
+                data-testid="button-book-airbear"
               >
-                <RickshawWheel size="sm" className="mr-3" />
-                Book Your Ride
+                <RickshawWheel size="sm" className="mr-3" animated glowing />
+                Book Your AirBear
               </Button>
             </Link>
             
@@ -154,10 +156,11 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-              Why Choose <span className="text-primary">AirBear</span>?
+              Why Choose <span className="text-primary animate-pulse-glow">AirBear</span>?
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Experience the future of sustainable transportation in Binghamton
+              <span className="text-emerald-600 font-semibold">"Buy the tee, ride for free—AirBear's eco-key!"</span>
+              <br />Experience the future of sustainable transportation in Binghamton
             </p>
           </motion.div>
 
@@ -216,10 +219,10 @@ export default function Home() {
                     <i className="fas fa-route text-primary text-2xl"></i>
                   </div>
                   <h3 className="text-xl font-semibold text-foreground mb-3 text-center">
-                    Smart Routing
+                    Smart AirBear Routing
                   </h3>
                   <p className="text-muted-foreground text-center">
-                    AI-powered routing across 16 Binghamton locations for optimal efficiency
+                    AI-powered AirBear routing across 16 Binghamton locations with clear pathways
                   </p>
                 </CardContent>
               </Card>

@@ -58,11 +58,19 @@ export default function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Welcome back, <span className="text-primary">{user.username}</span>!
-        </h1>
+        <div className="flex justify-center items-center space-x-3 mb-4">
+          <RickshawWheel size="lg" animated glowing />
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">
+              Welcome back, <span className="text-primary animate-pulse-glow">{user.username}</span>!
+            </h1>
+            <p className="text-emerald-600 font-semibold">
+              "AirBear flair, ride without a care!"
+            </p>
+          </div>
+        </div>
         <p className="text-muted-foreground">
-          Ready for your next eco-friendly adventure?
+          Ready for your next eco-friendly AirBear adventure?
         </p>
       </motion.div>
 
@@ -109,13 +117,13 @@ export default function Dashboard() {
         transition={{ duration: 0.8, delay: 0.4 }}
       >
         <Link to="/map">
-          <Card className="hover-lift glass-morphism cursor-pointer group" data-testid="card-book-ride">
+          <Card className="hover-lift glass-morphism cursor-pointer group" data-testid="card-book-airbear">
             <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                <MapPin className="h-8 w-8 text-primary" />
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors group-hover:animate-bounce">
+                <div className="text-2xl group-hover:animate-spin">🐻</div>
               </div>
-              <h3 className="font-semibold mb-2">Book a Ride</h3>
-              <p className="text-sm text-muted-foreground">Find nearby rickshaws</p>
+              <h3 className="font-semibold mb-2">Book AirBear</h3>
+              <p className="text-sm text-muted-foreground">Find nearby eco-rides</p>
             </CardContent>
           </Card>
         </Link>
@@ -278,11 +286,19 @@ export default function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Driver Dashboard
-        </h1>
+        <div className="flex justify-center items-center space-x-3 mb-4">
+          <RickshawWheel size="lg" animated glowing />
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">
+              AirBear Driver Hub
+            </h1>
+            <p className="text-emerald-600 font-semibold">
+              "Solar power in the air!"
+            </p>
+          </div>
+        </div>
         <p className="text-muted-foreground">
-          Manage your rickshaw and track your earnings
+          Manage your AirBear and track your eco-earnings
         </p>
       </motion.div>
 
@@ -357,11 +373,19 @@ export default function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Admin Dashboard
-        </h1>
+        <div className="flex justify-center items-center space-x-3 mb-4">
+          <RickshawWheel size="lg" animated glowing />
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">
+              AirBear Command Center
+            </h1>
+            <p className="text-emerald-600 font-semibold">
+              "Eco-rides so rare, powered by solar air!"
+            </p>
+          </div>
+        </div>
         <p className="text-muted-foreground">
-          Monitor fleet status and system analytics
+          Monitor AirBear fleet and eco-analytics
         </p>
       </motion.div>
 

@@ -1,7 +1,7 @@
 {
-  "name": "AirBear - Solar Rickshaw Ride Share",
+  "name": "AirBear - Solar-Powered Eco-Rides",
   "short_name": "AirBear",
-  "description": "Eco-friendly solar-powered rickshaw ride sharing with onboard bodegas in Binghamton, NY",
+  "description": "AirBear flair, ride without a care! Solar-powered eco-rides with mobile bodegas in Binghamton, NY",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#10b981",
@@ -42,9 +42,9 @@
   ],
   "shortcuts": [
     {
-      "name": "Book a Ride",
-      "short_name": "Book Ride",
-      "description": "Quickly book a solar rickshaw ride",
+      "name": "Book AirBear",
+      "short_name": "Book Ride", 
+      "description": "Glide with AirBear, eco-rides so rare!",
       "url": "/map",
       "icons": [
         {
@@ -57,7 +57,7 @@
     {
       "name": "Shop Bodega",
       "short_name": "Bodega",
-      "description": "Browse local products in our mobile bodega",
+      "description": "Shop local while you ride - AirBear's mobile bodega",
       "url": "/bodega",
       "icons": [
         {
