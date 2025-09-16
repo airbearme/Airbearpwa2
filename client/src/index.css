@@ -285,6 +285,112 @@
   }
 }
 
+@keyframes rolling-fire {
+  0% {
+    transform: rotate(0deg) scale(1);
+    box-shadow: 0 0 10px rgba(255, 69, 0, 0.8);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 165, 0, 1), 0 0 30px rgba(255, 69, 0, 0.6);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    box-shadow: 0 0 10px rgba(255, 69, 0, 0.8);
+  }
+}
+
+@keyframes smoke-trail {
+  0% {
+    transform: translateY(0) scale(0.5);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-20px) scale(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-40px) scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes prismatic-rays {
+  0% {
+    background: linear-gradient(to top, #fde047, #f97316, #dc2626);
+    filter: hue-rotate(0deg);
+  }
+  33% {
+    background: linear-gradient(to top, #a78bfa, #06b6d4, #10b981);
+    filter: hue-rotate(120deg);
+  }
+  66% {
+    background: linear-gradient(to top, #f472b6, #ec4899, #be185d);
+    filter: hue-rotate(240deg);
+  }
+  100% {
+    background: linear-gradient(to top, #fde047, #f97316, #dc2626);
+    filter: hue-rotate(360deg);
+  }
+}
+
+@keyframes burning-wheel {
+  0% {
+    box-shadow: 
+      0 0 10px rgba(255, 69, 0, 0.8),
+      inset 0 0 10px rgba(255, 165, 0, 0.4);
+  }
+  50% {
+    box-shadow: 
+      0 0 25px rgba(255, 165, 0, 1),
+      0 0 35px rgba(255, 69, 0, 0.8),
+      inset 0 0 15px rgba(255, 215, 0, 0.6);
+  }
+  100% {
+    box-shadow: 
+      0 0 10px rgba(255, 69, 0, 0.8),
+      inset 0 0 10px rgba(255, 165, 0, 0.4);
+  }
+}
+
+@keyframes holo-shimmer {
+  0% {
+    background-position: -200% center;
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  50% {
+    background-position: 200% center;
+    filter: hue-rotate(180deg) brightness(1.2);
+  }
+  100% {
+    background-position: -200% center;
+    filter: hue-rotate(360deg) brightness(1);
+  }
+}
+
+@keyframes plasma-vortex {
+  0% {
+    background: radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.8) 0%, rgba(59, 130, 246, 0.6) 30%, rgba(16, 185, 129, 0.4) 60%, transparent 100%);
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    background: radial-gradient(circle at 30% 70%, rgba(59, 130, 246, 0.8) 0%, rgba(16, 185, 129, 0.6) 30%, rgba(147, 51, 234, 0.4) 60%, transparent 100%);
+    transform: rotate(90deg) scale(1.1);
+  }
+  50% {
+    background: radial-gradient(circle at 70% 30%, rgba(16, 185, 129, 0.8) 0%, rgba(147, 51, 234, 0.6) 30%, rgba(59, 130, 246, 0.4) 60%, transparent 100%);
+    transform: rotate(180deg) scale(1);
+  }
+  75% {
+    background: radial-gradient(circle at 70% 70%, rgba(147, 51, 234, 0.8) 0%, rgba(59, 130, 246, 0.6) 30%, rgba(16, 185, 129, 0.4) 60%, transparent 100%);
+    transform: rotate(270deg) scale(1.1);
+  }
+  100% {
+    background: radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.8) 0%, rgba(59, 130, 246, 0.6) 30%, rgba(16, 185, 129, 0.4) 60%, transparent 100%);
+    transform: rotate(360deg) scale(1);
+  }
+}
+
 @keyframes liquid-fill {
   0% {
     transform: scaleX(0);
@@ -557,6 +663,32 @@
 
 .animate-spin-slow {
   animation: wheel-spin 3s linear infinite;
+}
+
+.animate-rolling-fire {
+  animation: rolling-fire 2s linear infinite;
+}
+
+.animate-smoke-trail {
+  animation: smoke-trail 3s ease-out infinite;
+}
+
+.animate-prismatic-rays {
+  animation: prismatic-rays 4s linear infinite;
+}
+
+.animate-burning-wheel {
+  animation: burning-wheel 1.5s ease-in-out infinite;
+}
+
+.animate-holo-shimmer {
+  animation: holo-shimmer 3s linear infinite;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background-size: 200% 100%;
+}
+
+.animate-plasma-vortex {
+  animation: plasma-vortex 5s ease-in-out infinite;
 }
 
 /* Leaflet Map Customization */

@@ -56,29 +56,53 @@ export default function Home() {
           </motion.div>
 
           <motion.h1 
-            className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6"
+            className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6 relative"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <span className="bg-gradient-to-r from-emerald-600 via-lime-500 to-amber-500 bg-clip-text text-transparent animate-pulse-glow">
-              AirBear Flair
+            <span className="bg-gradient-to-r from-emerald-600 via-lime-500 to-amber-500 bg-clip-text text-transparent animate-pulse-glow airbear-holographic">
+              AirBear Mobile Bodega
             </span>
             <br />
-            <span className="text-foreground">Ride Without a Care</span>
+            <span className="text-foreground airbear-solar-rays">Solar Powered Rideshare</span>
+            
+            {/* Holographic overlay effect */}
+            <div className="absolute inset-0 pointer-events-none">
+              {Array.from({ length: 8 }, (_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full opacity-60"
+                  style={{
+                    left: `${20 + (i * 10)}%`,
+                    top: `${30 + Math.sin(i) * 20}%`,
+                  }}
+                  animate={{
+                    scale: [0, 1.5, 0],
+                    opacity: [0, 1, 0],
+                    rotate: [0, 360, 720],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    delay: i * 0.3,
+                  }}
+                />
+              ))}
+            </div>
           </motion.h1>
           
           <motion.p 
-            className="text-xl sm:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed"
+            className="text-xl sm:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed airbear-eco-breeze"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <span className="text-primary font-bold">Glide with AirBear, eco-rides so rare!</span> 
+            <span className="text-primary font-bold animate-shimmer">Experience the future of sustainable transportation!</span> 
             <br />
-            Solar power in the air with onboard bodegas, 
-            <span className="text-emerald-500 font-semibold"> zero emissions</span>, and 
-            <span className="text-amber-500 font-semibold"> AirBear's eco-key!</span>
+            Solar-powered vehicles with onboard shopping experiences, 
+            <span className="text-emerald-500 font-semibold airbear-god-rays"> zero emissions</span>, and 
+            <span className="text-amber-500 font-semibold"> revolutionary eco-mobility!</span>
           </motion.p>
 
           {/* CTA Buttons */}

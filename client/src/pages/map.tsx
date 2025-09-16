@@ -93,8 +93,16 @@ export default function Map() {
 
     const initMap = () => {
       if (!window.L) {
-        // Wait for Leaflet to load
-        setTimeout(initMap, 100);
+        // Load Leaflet dynamically
+        const leafletCSS = document.createElement('link');
+        leafletCSS.rel = 'stylesheet';
+        leafletCSS.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+        document.head.appendChild(leafletCSS);
+        
+        const leafletJS = document.createElement('script');
+        leafletJS.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        leafletJS.onload = () => setTimeout(initMap, 100);
+        document.head.appendChild(leafletJS);
         return;
       }
 
@@ -146,30 +154,74 @@ export default function Map() {
       const availableRickshaws = rickshaws.filter(r => r.currentSpotId === spot.id);
       const hasRickshaws = availableRickshaws.length > 0;
       
-      // Create custom AirBear icon based on availability
+      // Create custom AirBear icon with enhanced special effects
       const iconHtml = `
         <div class="relative group cursor-pointer airbear-marker">
-          <div class="w-12 h-12 border-3 border-${hasRickshaws ? 'emerald-500' : 'gray-400'} rounded-full 
-                      ${hasRickshaws ? 'animate-pulse-glow shadow-lg shadow-emerald-500/50' : ''} bg-gradient-to-br from-white to-emerald-50 
-                      flex items-center justify-center hover:scale-110 transition-all duration-300">
-            <div class="text-lg ${hasRickshaws ? 'animate-spin-slow' : ''} group-hover:animate-bounce">
+          <!-- Main AirBear marker with holographic effects -->
+          <div class="w-16 h-16 border-4 border-${hasRickshaws ? 'emerald-500' : 'gray-400'} rounded-full 
+                      ${hasRickshaws ? 'animate-pulse-glow shadow-xl shadow-emerald-500/60' : ''} 
+                      bg-gradient-to-br from-white via-emerald-50 to-lime-100
+                      flex items-center justify-center hover:scale-125 transition-all duration-500 group-hover:animate-rickshaw-bounce
+                      relative overflow-hidden">
+            
+            <!-- Holographic rainbow effect -->
+            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400 via-pink-400 via-red-400 via-yellow-400 via-green-400 via-blue-400 to-purple-400 opacity-20 animate-spin-slow"></div>
+            
+            <!-- Fire/smoke particles on hover -->
+            ${hasRickshaws ? Array.from({ length: 6 }, (_, i) => `
+              <div class="absolute w-1 h-1 bg-orange-500 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-particle"
+                   style="left: ${50 + Math.cos(i * 60 * Math.PI / 180) * 25}%; top: ${50 + Math.sin(i * 60 * Math.PI / 180) * 25}%; animation-delay: ${i * 0.1}s;"></div>
+            `).join('') : ''}
+            
+            <!-- AirBear mascot with enhanced effects -->
+            <div class="text-2xl ${hasRickshaws ? 'animate-airbear-bounce' : ''} group-hover:animate-spin relative z-10">
               🐻
             </div>
+            
+            <!-- Solar rays effect -->
+            ${Array.from({ length: 12 }, (_, i) => `
+              <div class="absolute w-0.5 h-4 bg-yellow-400 opacity-40 group-hover:opacity-80 transition-opacity"
+                   style="left: 50%; top: -8px; transform-origin: 50% 32px; transform: rotate(${i * 30}deg); animation: solar-rays 4s linear infinite; animation-delay: ${i * 0.1}s;"></div>
+            `).join('')}
+            
             ${hasRickshaws ? `
-              <div class="absolute inset-0 rounded-full border-2 border-emerald-400 animate-ping opacity-30"></div>
-              <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-emerald-400 via-lime-400 to-yellow-400 opacity-20 blur-sm animate-pulse"></div>
+              <!-- Spinning wheel effect -->
+              <div class="absolute inset-2 rounded-full border-2 border-lime-400 opacity-60 animate-wheel-spin"></div>
+              <div class="absolute inset-4 rounded-full border border-emerald-400 opacity-40 animate-spin-slow"></div>
+              
+              <!-- Plasma energy rings -->
+              <div class="absolute inset-0 rounded-full border-2 border-cyan-400 animate-ping opacity-30"></div>
+              <div class="absolute -inset-2 rounded-full bg-gradient-to-r from-emerald-400 via-lime-400 to-yellow-400 opacity-15 blur-md animate-pulse"></div>
+              
+              <!-- God rays effect -->
+              <div class="absolute -inset-6 rounded-full bg-gradient-to-r from-transparent via-yellow-300/20 to-transparent animate-god-rays"></div>
             ` : ''}
           </div>
+          
+          <!-- Enhanced availability counter with special effects -->
           ${availableRickshaws.length > 0 ? `
-            <div class="absolute -top-2 -right-2 w-7 h-7 bg-gradient-to-r from-emerald-500 to-lime-500 text-white rounded-full 
-                        flex items-center justify-center text-xs font-bold shadow-lg animate-bounce">
-              ${availableRickshaws.length}
+            <div class="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-emerald-500 via-lime-500 to-green-400 text-white rounded-full 
+                        flex items-center justify-center text-sm font-bold shadow-xl animate-confetti-burst border-2 border-white
+                        relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-30 animate-holographic"></div>
+              <span class="relative z-10">${availableRickshaws.length}</span>
             </div>
           ` : ''}
-          <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs font-semibold text-emerald-700 
-                      bg-white/90 px-2 py-1 rounded-full shadow-sm whitespace-nowrap">
-            ${spot.name}
+          
+          <!-- Enhanced location label with effects -->
+          <div class="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-xs font-bold text-emerald-800 
+                      bg-gradient-to-r from-white via-emerald-50 to-white px-3 py-2 rounded-full shadow-lg whitespace-nowrap
+                      border border-emerald-200 hover:shadow-xl transition-all duration-300 hover:scale-105
+                      relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-100/50 to-transparent animate-shimmer"></div>
+            <span class="relative z-10">${spot.name}</span>
           </div>
+          
+          <!-- Floating eco particles -->
+          ${Array.from({ length: 4 }, (_, i) => `
+            <div class="absolute w-1 h-1 bg-green-400 rounded-full opacity-60 animate-float"
+                 style="left: ${30 + i * 15}%; top: ${20 + i * 10}%; animation-delay: ${i * 0.5}s; animation-duration: ${3 + i}s;"></div>
+          `).join('')}
         </div>
       `;
 
