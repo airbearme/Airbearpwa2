@@ -391,6 +391,35 @@
   }
 }
 
+@keyframes airbear-trail {
+  0% {
+    transform: translateX(-100%) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(0%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%) scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes ceo-signature-glow {
+  0% {
+    text-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+    color: #f59e0b;
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 193, 7, 0.8), 0 0 30px rgba(255, 193, 7, 0.6);
+    color: #fbbf24;
+  }
+  100% {
+    text-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+    color: #f59e0b;
+  }
+}
 @keyframes liquid-fill {
   0% {
     transform: scaleX(0);
@@ -691,6 +720,13 @@
   animation: plasma-vortex 5s ease-in-out infinite;
 }
 
+.animate-airbear-trail {
+  animation: airbear-trail 3s ease-in-out infinite;
+}
+
+.animate-ceo-signature {
+  animation: ceo-signature-glow 2s ease-in-out infinite;
+}
 /* Leaflet Map Customization */
 .leaflet-container {
   @apply rounded-xl;

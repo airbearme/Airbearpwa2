@@ -1,6 +1,6 @@
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 
-const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_live_51RzDHKKPp8gF577PnHEhuO3X7zbzdTe2c25Z02PlMcc5DXAjs4odL16Rtx8cJ8evlUrRAcJYHrR7tFS8P7y4SC7t00lvh2rk7h';
 
 if (!stripePublicKey) {
   throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
@@ -305,6 +305,64 @@ export const confirmCashPayment = async (qrCode: string, driverId: string): Prom
     return {
       success: false,
       error: error.message || 'Cash payment confirmation failed',
+    };
+  }
+};
+
+// CEO T-shirt purchase integration
+export const purchaseCeoTshirt = async (data: PaymentIntentData & { size: string }): Promise<PaymentResult> => {
+  try {
+    const response = await fetch('/api/ceo-tshirt/purchase', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+        amount: 10000, // $100.00 in cents
+        metadata: {
+          ...data.metadata,
+          product_type: 'ceo_tshirt',
+          size: data.size,
+          unlimited_rides: 'true',
+          non_transferable: 'true'
+        }
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to purchase CEO T-shirt');
+    }
+
+    const result = await response.json();
+    return {
+      success: true,
+      paymentIntent: result,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || 'CEO T-shirt purchase failed',
+    };
+  }
+};
+
+// Free ride validation for CEO T-shirt holders
+export const validateFreeRide = async (userId: string): Promise<{ canRideFree: boolean; reason?: string }> => {
+  try {
+    const response = await fetch(`/api/users/${userId}/free-ride-status`);
+    
+    if (!response.ok) {
+      throw new Error('Failed to validate free ride status');
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error: any) {
+    return {
+      canRideFree: false,
+      reason: error.message || 'Validation failed'
     };
   }
 };

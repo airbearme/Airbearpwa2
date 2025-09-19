@@ -1,7 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type User } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://xckggdmqfqajatytmiko.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhja2dnZG1xZnFhamF0eXRtaWtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1NjY0MzEsImV4cCI6MjA3MTE0MjQzMX0.16ENL-9-QPSxuN620NGO-BndYpHCLuEdVQeR_lZqYA0';
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
@@ -11,7 +11,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    flowType: 'pkce'
   },
   realtime: {
     params: {
@@ -19,6 +20,126 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     }
   }
 });
+
+// Database type definitions
+export interface Database {
+  public: {
+    Tables: {
+      users: {
+        Row: {
+          id: string;
+          email: string;
+          username: string;
+          full_name: string | null;
+          avatar_url: string | null;
+          role: 'user' | 'driver' | 'admin';
+          eco_points: number;
+          total_rides: number;
+          co2_saved: string;
+          has_ceo_tshirt: boolean;
+          tshirt_purchase_date: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          email: string;
+          username: string;
+          full_name?: string;
+          avatar_url?: string;
+          role?: 'user' | 'driver' | 'admin';
+        };
+        Update: {
+          username?: string;
+          full_name?: string;
+          avatar_url?: string;
+          eco_points?: number;
+          total_rides?: number;
+          co2_saved?: string;
+          has_ceo_tshirt?: boolean;
+        };
+      };
+      spots: {
+        Row: {
+          id: string;
+          name: string;
+          latitude: string;
+          longitude: string;
+          description: string | null;
+          amenities: string[] | null;
+          is_active: boolean;
+          created_at: string;
+        };
+      };
+      airbears: {
+        Row: {
+          id: string;
+          driver_id: string | null;
+          current_spot_id: string | null;
+          battery_level: number;
+          is_available: boolean;
+          is_charging: boolean;
+          total_distance: string;
+          maintenance_status: 'excellent' | 'good' | 'needs_service' | 'out_of_service';
+          solar_panel_efficiency: string;
+          created_at: string;
+        };
+      };
+      rides: {
+        Row: {
+          id: string;
+          user_id: string;
+          driver_id: string | null;
+          airbear_id: string | null;
+          pickup_spot_id: string;
+          destination_spot_id: string;
+          status: 'pending' | 'accepted' | 'in_progress' | 'completed' | 'cancelled';
+          distance: string | null;
+          co2_saved: string | null;
+          fare: string;
+          is_free_tshirt_ride: boolean;
+          requested_at: string;
+        };
+        Insert: {
+          user_id: string;
+          pickup_spot_id: string;
+          destination_spot_id: string;
+          fare: number;
+          is_free_tshirt_ride?: boolean;
+        };
+      };
+      bodega_items: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          price: string;
+          image_url: string | null;
+          category: string;
+          is_eco_friendly: boolean;
+          is_available: boolean;
+          is_ceo_special: boolean;
+          stock: number;
+          created_at: string;
+        };
+      };
+      orders: {
+        Row: {
+          id: string;
+          user_id: string;
+          items: any;
+          total_amount: string;
+          status: string;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          items: any;
+          total_amount: number;
+        };
+      };
+    };
+  };
+}
 
 // Auth helpers
 export const signInWithEmail = async (email: string, password: string) => {
@@ -67,10 +188,10 @@ export const getCurrentUser = async () => {
   return user;
 };
 
-// Real-time subscriptions
+// Enhanced real-time subscriptions with proper typing
 export const subscribeToRides = (userId: string, callback: (payload: any) => void) => {
   return supabase
-    .channel('rides')
+    .channel(`rides:user_id=eq.${userId}`)
     .on(
       'postgres_changes',
       {
@@ -84,31 +205,31 @@ export const subscribeToRides = (userId: string, callback: (payload: any) => voi
     .subscribe();
 };
 
-export const subscribeToRickshaws = (callback: (payload: any) => void) => {
+export const subscribeToAirbears = (callback: (payload: any) => void) => {
   return supabase
-    .channel('rickshaws')
+    .channel('airbears')
     .on(
       'postgres_changes',
       {
         event: '*',
         schema: 'public', 
-        table: 'rickshaws'
+        table: 'airbears'
       },
       callback
     )
     .subscribe();
 };
 
-export const subscribeToInventory = (rickshawId: string, callback: (payload: any) => void) => {
+export const subscribeToInventory = (airbearId: string, callback: (payload: any) => void) => {
   return supabase
-    .channel('rickshaw_inventory')
+    .channel(`airbear_inventory:airbear_id=eq.${airbearId}`)
     .on(
       'postgres_changes',
       {
         event: '*',
         schema: 'public',
-        table: 'rickshaw_inventory',
-        filter: `rickshaw_id=eq.${rickshawId}`
+        table: 'airbear_inventory',
+        filter: `airbear_id=eq.${airbearId}`
       },
       callback
     )
@@ -182,9 +303,10 @@ export const getSpots = async () => {
   return data;
 };
 
-export const getRickshaws = async () => {
+// Enhanced database helpers with proper error handling
+export const getAirbears = async () => {
   const { data, error } = await supabase
-    .from('rickshaws')
+    .from('airbears')
     .select(`
       *,
       current_spot:spots(*)
@@ -194,9 +316,9 @@ export const getRickshaws = async () => {
   return data;
 };
 
-export const getAvailableRickshaws = async () => {
+export const getAvailableAirbears = async () => {
   const { data, error } = await supabase
-    .from('rickshaws')
+    .from('airbears')
     .select(`
       *,
       current_spot:spots(*)
@@ -266,6 +388,51 @@ export const createPayment = async (paymentData: any) => {
     
   if (error) throw error;
   return data;
+};
+
+// CEO T-shirt specific functions
+export const getCeoTshirts = async () => {
+  const { data, error } = await supabase
+    .from('bodega_items')
+    .select('*')
+    .eq('is_ceo_special', true)
+    .eq('is_available', true)
+    .gt('stock', 0);
+    
+  if (error) throw error;
+  return data;
+};
+
+export const purchaseCeoTshirt = async (userId: string, itemId: string) => {
+  const { data, error } = await supabase.rpc('purchase_ceo_tshirt', {
+    user_id: userId,
+    item_id: itemId
+  });
+  
+  if (error) throw error;
+  return data;
+};
+
+// Real-time presence for drivers
+export const trackDriverPresence = (driverId: string) => {
+  return supabase.channel('driver_presence')
+    .on('presence', { event: 'sync' }, () => {
+      console.log('Driver presence synced');
+    })
+    .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+      console.log('Driver joined:', key, newPresences);
+    })
+    .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+      console.log('Driver left:', key, leftPresences);
+    })
+    .subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') {
+        await supabase.channel('driver_presence').track({
+          driver_id: driverId,
+          online_at: new Date().toISOString(),
+        });
+      }
+    });
 };
 
 // Row Level Security (RLS) policies would be set up in Supabase dashboard:

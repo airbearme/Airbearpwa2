@@ -201,6 +201,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // CEO T-shirt purchase route
+  app.post("/api/ceo-tshirt/purchase", async (req, res) => {
+    try {
+      const { userId, size, amount } = req.body;
+      
+      // Create Stripe PaymentIntent for CEO T-shirt
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: 10000, // $100.00 in cents
+        currency: "usd",
+        automatic_payment_methods: {
+          enabled: true,
+        },
+        metadata: {
+          product_type: "ceo_tshirt",
+          user_id: userId,
+          size: size,
+          unlimited_rides: "true",
+          non_transferable: "true"
+        }
+      });
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Error creating CEO T-shirt payment: " + error.message });
+    }
+  });
+
+  // Free ride validation for CEO T-shirt holders
+  app.get("/api/users/:userId/free-ride-status", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Check if user has CEO T-shirt
+      if (!user.hasCeoTshirt) {
+        return res.json({ 
+          canRideFree: false, 
+          reason: "No CEO T-shirt purchased" 
+        });
+      }
+
+      // Check if user has already used free ride today
+      const today = new Date().toISOString().split('T')[0];
+      const todayRides = await storage.getRidesByUserAndDate(userId, today);
+      const freeRidesToday = todayRides.filter(ride => ride.isFreeTshirtRide);
+
+      if (freeRidesToday.length > 0) {
+        return res.json({ 
+          canRideFree: false, 
+          reason: "Daily free ride already used" 
+        });
+      }
+
+      res.json({ canRideFree: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Webhook for Stripe
   app.post("/api/webhooks/stripe", async (req, res) => {
     try {
@@ -223,6 +289,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         case 'payment_intent.succeeded':
           const paymentIntent = event.data.object;
           console.log('PaymentIntent succeeded:', paymentIntent.id);
+          
+          // Handle CEO T-shirt purchase
+          if (paymentIntent.metadata?.product_type === 'ceo_tshirt') {
+            const userId = paymentIntent.metadata.user_id;
+            if (userId) {
+              await storage.updateUser(userId, { 
+                hasCeoTshirt: true,
+                tshirtPurchaseDate: new Date()
+              });
+              console.log('CEO T-shirt activated for user:', userId);
+            }
+          }
           
           // Update payment status in database
           const metadata = paymentIntent.metadata;

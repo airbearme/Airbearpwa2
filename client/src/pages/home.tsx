@@ -1,13 +1,17 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import RickshawWheel from "@/components/rickshaw-wheel";
+import AirbearWheel from "@/components/airbear-wheel";
 import EcoImpact from "@/components/eco-impact";
+import CeoTshirtPromo from "@/components/ceo-tshirt-promo";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, Crown } from "lucide-react";
+import { useState } from "react";
 
 export default function Home() {
+  const [showCeoPromo, setShowCeoPromo] = useState(false);
+  
   const { data: spots, isLoading } = useQuery({
     queryKey: ["/api/spots"],
   });
@@ -28,14 +32,14 @@ export default function Home() {
             animate={{ y: [-10, 10, -10] }}
             transition={{ duration: 6, repeat: Infinity }}
           >
-            <RickshawWheel size="lg" className="opacity-30" />
+            <AirbearWheel size="lg" className="opacity-30" effectType="solar" />
           </motion.div>
           <motion.div 
             className="absolute top-1/3 right-1/4"
             animate={{ y: [10, -10, 10] }}
             transition={{ duration: 6, repeat: Infinity, delay: 1 }}
           >
-            <RickshawWheel size="lg" className="opacity-20" />
+            <AirbearWheel size="lg" className="opacity-20" effectType="eco" />
           </motion.div>
         </div>
 
@@ -118,10 +122,20 @@ export default function Home() {
                 className="group relative eco-gradient text-white hover-lift ripple-effect px-8 py-4 text-lg font-semibold animate-neon-glow"
                 data-testid="button-book-airbear"
               >
-                <RickshawWheel size="sm" className="mr-3" animated glowing />
+                <AirbearWheel size="sm" className="mr-3" animated glowing />
                 Book Your AirBear
               </Button>
             </Link>
+            
+            <Button 
+              size="lg"
+              onClick={() => setShowCeoPromo(true)}
+              className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 text-white hover-lift ripple-effect px-8 py-4 text-lg font-semibold animate-pulse-glow"
+              data-testid="button-ceo-tshirt"
+            >
+              <Crown className="mr-3 h-6 w-6" />
+              CEO T-Shirt $100
+            </Button>
             
             <Button 
               variant="outline" 
@@ -302,6 +316,12 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+      
+      {/* CEO T-Shirt Promo Dialog */}
+      <CeoTshirtPromo 
+        isOpen={showCeoPromo} 
+        onClose={() => setShowCeoPromo(false)} 
+      />
     </div>
   );
 }

@@ -22,15 +22,15 @@ const spokeClasses = {
   md: "w-5 h-0.5", 
   lg: "w-8 h-1",
   xl: "w-12 h-1.5",
-};
+import AirbearWheel from "./airbear-wheel";
 
-export default function RickshawWheel({ 
+export default function AirbearWheel({ 
   size = "md", 
   className, 
   animated = true,
   glowing = false,
   onClick 
-}: RickshawWheelProps) {
+}: AirbearWheelProps) {
   const [effectType, setEffectType] = useState<'fire' | 'neon' | 'holographic' | 'plasma'>('neon');
   
   const wheelClass = cn(
