@@ -10,16 +10,29 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
-import { Moon, Sun, Menu, User, Settings, LogOut } from "lucide-react";
+import { Moon, Sun, Menu, User, Settings, LogOut, Thermometer, Wind } from "lucide-react";
 import { useTheme } from "next-themes";
-import RickshawWheel from "@/components/rickshaw-wheel";
+import AirbearWheel from "@/components/airbear-wheel";
 import { useAuth } from "@/hooks/use-auth";
+import { useWeatherContext } from "@/hooks/use-weather-provider";
 import { motion } from "framer-motion";
+
+const getWeatherIcon = (weatherCode: number) => {
+  if (weatherCode >= 200 && weatherCode < 300) return "⛈️";
+  if (weatherCode >= 300 && weatherCode < 400) return "🌧️";
+  if (weatherCode >= 500 && weatherCode < 600) return "🌧️";
+  if (weatherCode >= 600 && weatherCode < 700) return "❄️";
+  if (weatherCode >= 700 && weatherCode < 800) return "🌫️";
+  if (weatherCode === 800) return "☀️";
+  if (weatherCode > 800) return "☁️";
+  return "🤷";
+};
 
 export default function Header() {
   const [location] = useLocation();
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
+  const { weather, isLoading } = useWeatherContext();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation = [
@@ -86,6 +99,15 @@ export default function Header() {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
+            {/* Weather */}
+            {!isLoading && weather && (
+              <div className="hidden sm:flex items-center space-x-2 text-sm">
+                <Thermometer className="h-4 w-4" />
+                <span>{weather.temperature}°C</span>
+                <span>{getWeatherIcon(weather.weathercode)}</span>
+              </div>
+            )}
+
             {/* Theme Toggle */}
             <Button
               variant="ghost"

@@ -8,9 +8,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import RickshawWheel from "@/components/rickshaw-wheel";
+import AirbearWheel from "@/components/airbear-wheel";
 import LoadingSpinner from "@/components/loading-spinner";
-import { spots } from "@/lib/spots";
+import { supabase } from "@/lib/supabase";
 import { 
   MapPin, 
   Navigation, 
@@ -37,8 +37,10 @@ interface Spot {
   isActive: boolean;
 }
 
-interface Rickshaw {
+interface Airbear {
   id: string;
+  latitude: string | null;
+  longitude: string | null;
   currentSpotId: string;
   batteryLevel: number;
   isAvailable: boolean;
@@ -56,14 +58,41 @@ export default function Map() {
   const [selectedDestination, setSelectedDestination] = useState<Spot | null>(null);
   const [showBookingDialog, setShowBookingDialog] = useState(false);
   const [mapReady, setMapReady] = useState(false);
+  const [airbears, setAirbears] = useState<Airbear[]>([]);
 
   const { data: spotsData, isLoading: spotsLoading } = useQuery<Spot[]>({
     queryKey: ["/api/spots"],
   });
 
-  const { data: rickshaws, isLoading: rickshawsLoading } = useQuery<Rickshaw[]>({
-    queryKey: ["/api/rickshaws/available"],
+  const { isLoading: airbearsLoading } = useQuery<Airbear[]>({
+    queryKey: ["/api/airbears/available"],
+    onSuccess: (data) => {
+      setAirbears(data);
+    },
   });
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('airbears')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'airbears' }, (payload) => {
+        setAirbears((prevAirbears) => {
+          const newAirbear = payload.new as Airbear;
+          const index = prevAirbears.findIndex((a) => a.id === newAirbear.id);
+          if (index === -1) {
+            return [...prevAirbears, newAirbear];
+          } else {
+            const newAirbears = [...prevAirbears];
+            newAirbears[index] = newAirbear;
+            return newAirbears;
+          }
+        });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const bookRideMutation = useMutation({
     mutationFn: async (rideData: any) => {
@@ -73,7 +102,7 @@ export default function Map() {
     onSuccess: () => {
       toast({
         title: "Ride Booked!",
-        description: "Your rickshaw is on the way. You'll receive updates shortly.",
+        description: "Your airbear is on the way. You'll receive updates shortly.",
       });
       setShowBookingDialog(false);
       queryClient.invalidateQueries({ queryKey: ["/api/rides"] });
@@ -138,7 +167,7 @@ export default function Map() {
 
   // Add markers to map
   useEffect(() => {
-    if (!mapInstanceRef.current || !spotsData || !rickshaws) return;
+    if (!mapInstanceRef.current || !spotsData || !airbears) return;
 
     const map = mapInstanceRef.current;
     
@@ -149,79 +178,18 @@ export default function Map() {
       }
     });
 
-    // Add spot markers
-    spotsData.forEach((spot: Spot) => {
-      const availableRickshaws = rickshaws.filter(r => r.currentSpotId === spot.id);
-      const hasRickshaws = availableRickshaws.length > 0;
-      
-      // Create custom AirBear icon with enhanced special effects
+    // Add airbear markers
+    airbears.forEach((airbear: Airbear) => {
+      if (!airbear.latitude || !airbear.longitude) return;
+
       const iconHtml = `
         <div class="relative group cursor-pointer airbear-marker">
-          <!-- Main AirBear marker with holographic effects -->
-          <div class="w-16 h-16 border-4 border-${hasRickshaws ? 'emerald-500' : 'gray-400'} rounded-full 
-                      ${hasRickshaws ? 'animate-pulse-glow shadow-xl shadow-emerald-500/60' : ''} 
-                      bg-gradient-to-br from-white via-emerald-50 to-lime-100
-                      flex items-center justify-center hover:scale-125 transition-all duration-500 group-hover:animate-rickshaw-bounce
-                      relative overflow-hidden">
-            
-            <!-- Holographic rainbow effect -->
+          <div class="w-16 h-16 border-4 border-emerald-500 rounded-full animate-pulse-glow shadow-xl shadow-emerald-500/60 bg-gradient-to-br from-white via-emerald-50 to-lime-100 flex items-center justify-center hover:scale-125 transition-all duration-500 group-hover:animate-airbear-bounce relative overflow-hidden">
             <div class="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400 via-pink-400 via-red-400 via-yellow-400 via-green-400 via-blue-400 to-purple-400 opacity-20 animate-spin-slow"></div>
-            
-            <!-- Fire/smoke particles on hover -->
-            ${hasRickshaws ? Array.from({ length: 6 }, (_, i) => `
-              <div class="absolute w-1 h-1 bg-orange-500 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-particle"
-                   style="left: ${50 + Math.cos(i * 60 * Math.PI / 180) * 25}%; top: ${50 + Math.sin(i * 60 * Math.PI / 180) * 25}%; animation-delay: ${i * 0.1}s;"></div>
-            `).join('') : ''}
-            
-            <!-- AirBear mascot with enhanced effects -->
-            <div class="text-2xl ${hasRickshaws ? 'animate-airbear-bounce' : ''} group-hover:animate-spin relative z-10">
+            <div class="text-2xl animate-airbear-bounce group-hover:animate-spin relative z-10">
               🐻
             </div>
-            
-            <!-- Solar rays effect -->
-            ${Array.from({ length: 12 }, (_, i) => `
-              <div class="absolute w-0.5 h-4 bg-yellow-400 opacity-40 group-hover:opacity-80 transition-opacity"
-                   style="left: 50%; top: -8px; transform-origin: 50% 32px; transform: rotate(${i * 30}deg); animation: solar-rays 4s linear infinite; animation-delay: ${i * 0.1}s;"></div>
-            `).join('')}
-            
-            ${hasRickshaws ? `
-              <!-- Spinning wheel effect -->
-              <div class="absolute inset-2 rounded-full border-2 border-lime-400 opacity-60 animate-wheel-spin"></div>
-              <div class="absolute inset-4 rounded-full border border-emerald-400 opacity-40 animate-spin-slow"></div>
-              
-              <!-- Plasma energy rings -->
-              <div class="absolute inset-0 rounded-full border-2 border-cyan-400 animate-ping opacity-30"></div>
-              <div class="absolute -inset-2 rounded-full bg-gradient-to-r from-emerald-400 via-lime-400 to-yellow-400 opacity-15 blur-md animate-pulse"></div>
-              
-              <!-- God rays effect -->
-              <div class="absolute -inset-6 rounded-full bg-gradient-to-r from-transparent via-yellow-300/20 to-transparent animate-god-rays"></div>
-            ` : ''}
           </div>
-          
-          <!-- Enhanced availability counter with special effects -->
-          ${availableRickshaws.length > 0 ? `
-            <div class="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-emerald-500 via-lime-500 to-green-400 text-white rounded-full 
-                        flex items-center justify-center text-sm font-bold shadow-xl animate-confetti-burst border-2 border-white
-                        relative overflow-hidden">
-              <div class="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-30 animate-holographic"></div>
-              <span class="relative z-10">${availableRickshaws.length}</span>
-            </div>
-          ` : ''}
-          
-          <!-- Enhanced location label with effects -->
-          <div class="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-xs font-bold text-emerald-800 
-                      bg-gradient-to-r from-white via-emerald-50 to-white px-3 py-2 rounded-full shadow-lg whitespace-nowrap
-                      border border-emerald-200 hover:shadow-xl transition-all duration-300 hover:scale-105
-                      relative overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-100/50 to-transparent animate-shimmer"></div>
-            <span class="relative z-10">${spot.name}</span>
-          </div>
-          
-          <!-- Floating eco particles -->
-          ${Array.from({ length: 4 }, (_, i) => `
-            <div class="absolute w-1 h-1 bg-green-400 rounded-full opacity-60 animate-float"
-                 style="left: ${30 + i * 15}%; top: ${20 + i * 10}%; animation-delay: ${i * 0.5}s; animation-duration: ${3 + i}s;"></div>
-          `).join('')}
         </div>
       `;
 
@@ -233,7 +201,7 @@ export default function Map() {
       });
 
       const marker = window.L.marker(
-        [parseFloat(spot.latitude), parseFloat(spot.longitude)], 
+        [parseFloat(airbear.latitude), parseFloat(airbear.longitude)],
         { icon: customIcon }
       ).addTo(map);
 
@@ -242,33 +210,27 @@ export default function Map() {
         <div class="p-4 min-w-[250px] bg-white rounded-lg">
           <div class="flex items-center mb-3">
             <span class="text-2xl mr-2">🐻</span>
-            <h3 class="font-bold text-lg text-emerald-700">${spot.name}</h3>
+            <h3 class="font-bold text-lg text-emerald-700">Airbear #${airbear.id.substring(0, 5)}</h3>
           </div>
           <div class="space-y-3">
             <div class="flex items-center justify-between text-sm">
               <span class="flex items-center">
-                <span class="w-3 h-3 rounded-full ${hasRickshaws ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'} mr-2"></span>
-                AirBears Available
+                <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse mr-2"></span>
+                Status
               </span>
-              <span class="font-semibold ${hasRickshaws ? 'text-emerald-600' : 'text-gray-500'}">
-                ${hasRickshaws ? `${availableRickshaws.length} ready` : 'None'}
+              <span class="font-semibold text-emerald-600">
+                ${airbear.isAvailable ? 'Available' : 'En Route'}
               </span>
             </div>
-            ${hasRickshaws ? `
-              <div class="text-xs text-emerald-600 italic mb-2">
-                "Glide with AirBear, eco-rides so rare!"
-              </div>
-              <button onclick="window.selectSpotForRide('${spot.id}')" 
-                      class="w-full mt-2 px-4 py-3 bg-gradient-to-r from-emerald-500 via-lime-500 to-emerald-500 
-                             text-white rounded-lg hover:shadow-lg hover:scale-105
-                             transition-all font-bold text-sm shadow-md">
-                🚀 Book AirBear Ride
-              </button>
-            ` : `
-              <div class="text-xs text-gray-500 italic">
-                No AirBears available at this spot
-              </div>
-            `}
+            <div class="flex items-center justify-between text-sm">
+              <span class="flex items-center">
+                <Battery className="h-4 w-4 text-green-500 mr-2" />
+                Battery
+              </span>
+              <span class="font-semibold text-emerald-600">
+                ${airbear.batteryLevel}%
+              </span>
+            </div>
           </div>
         </div>
       `;
@@ -276,16 +238,7 @@ export default function Map() {
       marker.bindPopup(popupContent);
     });
 
-    // Global function for booking
-    (window as any).selectSpotForRide = (spotId: string) => {
-      const spot = spotsData.find(s => s.id === spotId);
-      if (spot) {
-        setSelectedSpot(spot);
-        setShowBookingDialog(true);
-      }
-    };
-
-  }, [spotsData, rickshaws, mapReady]);
+  }, [spotsData, airbears, mapReady]);
 
   const handleBookRide = () => {
     if (!user || !selectedSpot || !selectedDestination) {
@@ -307,7 +260,7 @@ export default function Map() {
     bookRideMutation.mutate(rideData);
   };
 
-  if (spotsLoading || rickshawsLoading) {
+  if (spotsLoading || airbearsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner size="lg" text="Loading map..." />
@@ -352,15 +305,15 @@ export default function Map() {
               <div className="flex items-center space-x-4 text-sm">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                  <span>{rickshaws?.filter(r => r.isAvailable).length || 0} Available</span>
+                  <span>{airbears?.filter(r => r.isAvailable).length || 0} Available</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
-                  <span>{rickshaws?.filter(r => !r.isAvailable && !r.isCharging).length || 0} En Route</span>
+                  <span>{airbears?.filter(r => !r.isAvailable && !r.isCharging).length || 0} En Route</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span>{rickshaws?.filter(r => r.isCharging).length || 0} Charging</span>
+                  <span>{airbears?.filter(r => r.isCharging).length || 0} Charging</span>
                 </div>
               </div>
             </div>
@@ -382,8 +335,8 @@ export default function Map() {
           {/* Map Legend */}
           <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center space-x-2">
-              <RickshawWheel size="sm" />
-              <span>Available Rickshaw</span>
+              <AirbearWheel size="sm" />
+              <span>Available Airbear</span>
             </div>
             <div className="flex items-center space-x-2">
               <Store className="h-4 w-4 text-amber-500" />
@@ -404,9 +357,9 @@ export default function Map() {
           transition={{ duration: 0.8, delay: 0.4 }}
         >
           {spotsData?.map((spot: Spot, index: number) => {
-            const availableRickshaws = rickshaws?.filter(r => r.currentSpotId === spot.id) || [];
-            const avgBattery = availableRickshaws.length > 0 
-              ? Math.round(availableRickshaws.reduce((sum, r) => sum + r.batteryLevel, 0) / availableRickshaws.length)
+            const availableAirbears = airbears?.filter(r => r.currentSpotId === spot.id) || [];
+            const avgBattery = availableAirbears.length > 0
+              ? Math.round(availableAirbears.reduce((sum, r) => sum + r.batteryLevel, 0) / availableAirbears.length)
               : 0;
             
             return (
@@ -420,7 +373,7 @@ export default function Map() {
                   className="hover-lift glass-morphism cursor-pointer group"
                   onClick={() => {
                     setSelectedSpot(spot);
-                    if (availableRickshaws.length > 0) {
+                    if (availableAirbears.length > 0) {
                       setShowBookingDialog(true);
                     }
                   }}
@@ -429,10 +382,10 @@ export default function Map() {
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg flex items-center justify-between">
                       <span className="truncate">{spot.name}</span>
-                      <RickshawWheel 
+                      <AirbearWheel
                         size="sm" 
-                        animated={availableRickshaws.length > 0}
-                        className={availableRickshaws.length > 0 ? "text-primary" : "text-muted-foreground"}
+                        animated={availableAirbears.length > 0}
+                        className={availableAirbears.length > 0 ? "text-primary" : "text-muted-foreground"}
                       />
                     </CardTitle>
                   </CardHeader>
@@ -440,14 +393,14 @@ export default function Map() {
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Available</span>
                       <Badge 
-                        variant={availableRickshaws.length > 0 ? "default" : "secondary"}
-                        className={availableRickshaws.length > 0 ? "bg-green-500" : ""}
+                        variant={availableAirbears.length > 0 ? "default" : "secondary"}
+                        className={availableAirbears.length > 0 ? "bg-green-500" : ""}
                       >
-                        {availableRickshaws.length} rickshaw{availableRickshaws.length !== 1 ? 's' : ''}
+                        {availableAirbears.length} airbear{availableAirbears.length !== 1 ? 's' : ''}
                       </Badge>
                     </div>
                     
-                    {availableRickshaws.length > 0 && (
+                    {availableAirbears.length > 0 && (
                       <>
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-muted-foreground">Avg Battery</span>
@@ -470,10 +423,10 @@ export default function Map() {
                     <Button 
                       size="sm" 
                       className="w-full eco-gradient text-white"
-                      disabled={availableRickshaws.length === 0}
+                      disabled={availableAirbears.length === 0}
                       data-testid={`button-book-from-${spot.name.toLowerCase().replace(/\s+/g, '-')}`}
                     >
-                      {availableRickshaws.length > 0 ? "Book Ride" : "No Rickshaws"}
+                      {availableAirbears.length > 0 ? "Book Ride" : "No Airbears"}
                     </Button>
                   </CardContent>
                 </Card>
@@ -487,7 +440,7 @@ export default function Map() {
           <DialogContent className="glass-morphism max-w-md" data-testid="dialog-book-ride">
             <DialogHeader>
               <DialogTitle className="flex items-center">
-                <RickshawWheel size="sm" className="mr-2" />
+                <AirbearWheel size="sm" className="mr-2" />
                 Book Your Ride
               </DialogTitle>
             </DialogHeader>
@@ -558,7 +511,7 @@ export default function Map() {
               >
                 {bookRideMutation.isPending ? (
                   <div className="flex items-center">
-                    <RickshawWheel size="sm" className="mr-2" />
+                    <AirbearWheel size="sm" className="mr-2" />
                     Booking...
                   </div>
                 ) : (

@@ -56,22 +56,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Rickshaws routes
-  app.get("/api/rickshaws", async (req, res) => {
+  // Airbears routes
+  app.get("/api/airbears", async (req, res) => {
     try {
-      const rickshaws = await storage.getAllRickshaws();
-      res.json(rickshaws);
+      const airbears = await storage.getAllAirbears();
+      res.json(airbears);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.get("/api/rickshaws/available", async (req, res) => {
+  app.get("/api/airbears/available", async (req, res) => {
     try {
-      const rickshaws = await storage.getAvailableRickshaws();
-      res.json(rickshaws);
+      const airbears = await storage.getAvailableAirbears();
+      res.json(airbears);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/airbears/:id/location", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { latitude, longitude } = req.body;
+      const airbear = await storage.updateAirbear(id, { latitude, longitude });
+      res.json(airbear);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   });
 

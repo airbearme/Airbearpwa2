@@ -10,8 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import RickshawWheel from "@/components/rickshaw-wheel";
-import LoadingSpinner from "@/components/loading-spinner";
+import AirbearWheel from "@/components/airbear-wheel";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 import { 
   ShoppingCart, 
   Plus, 
@@ -390,7 +390,7 @@ export default function Bodega() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
           >
-            <RickshawWheel size="xl" className="mx-auto mb-4 opacity-50" />
+            <AirbearWheel size="xl" className="mx-auto mb-4 opacity-50" />
             <h3 className="text-xl font-semibold text-foreground mb-2">No products found</h3>
             <p className="text-muted-foreground">
               {searchQuery ? "Try adjusting your search terms" : "No products available in this category"}
@@ -486,12 +486,12 @@ export default function Bodega() {
                       >
                         {createOrderMutation.isPending ? (
                           <div className="flex items-center">
-                            <RickshawWheel size="sm" className="mr-2" />
+                            <AirbearWheel size="sm" className="mr-2" />
                             Placing Order...
                           </div>
                         ) : (
                           <div className="flex items-center">
-                            <RickshawWheel size="sm" className="mr-2" />
+                            <AirbearWheel size="sm" className="mr-2" />
                             Checkout on Arrival
                           </div>
                         )}

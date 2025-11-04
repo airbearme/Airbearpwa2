@@ -36,11 +36,13 @@ export const spots = pgTable("spots", {
   createdAt: timestamp("created_at").notNull().default(sql`now()`)
 });
 
-// Rickshaws table
-export const rickshaws = pgTable("rickshaws", {
+// Airbears table
+export const airbears = pgTable("airbears", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   driverId: varchar("driver_id").references(() => users.id),
   currentSpotId: varchar("current_spot_id").references(() => spots.id),
+  latitude: decimal("latitude", { precision: 10, scale: 8 }),
+  longitude: decimal("longitude", { precision: 11, scale: 8 }),
   batteryLevel: integer("battery_level").notNull().default(100),
   isAvailable: boolean("is_available").notNull().default(true),
   isCharging: boolean("is_charging").notNull().default(false),
@@ -131,7 +133,7 @@ export const insertSpotSchema = createInsertSchema(spots).omit({
   createdAt: true
 });
 
-export const insertRickshawSchema = createInsertSchema(rickshaws).omit({
+export const insertAirbearSchema = createInsertSchema(airbears).omit({
   id: true,
   createdAt: true
 });
@@ -164,8 +166,8 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Spot = typeof spots.$inferSelect;
 export type InsertSpot = z.infer<typeof insertSpotSchema>;
-export type Rickshaw = typeof rickshaws.$inferSelect;
-export type InsertRickshaw = z.infer<typeof insertRickshawSchema>;
+export type Airbear = typeof airbears.$inferSelect;
+export type InsertAirbear = z.infer<typeof insertAirbearSchema>;
 export type Ride = typeof rides.$inferSelect;
 export type InsertRide = z.infer<typeof insertRideSchema>;
 export type BodegaItem = typeof bodegaItems.$inferSelect;

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
@@ -8,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Link } from "wouter";
-import RickshawWheel from "@/components/rickshaw-wheel";
+import AirbearWheel from "@/components/airbear-wheel";
 import { 
   ShirtIcon as Shirt, 
   Crown, 
@@ -203,7 +202,7 @@ export default function Promo() {
                   </p>
                   <Link to="/map">
                     <Button className="eco-gradient text-white hover-lift">
-                      <RickshawWheel size="sm" className="mr-2" />
+                      <AirbearWheel size="sm" className="mr-2" />
                       Book Your Free AirBear Ride
                     </Button>
                   </Link>
